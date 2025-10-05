@@ -148,7 +148,7 @@ func (t TextOptions) Query() string {
 }
 
 func (s *TextService) Get(ctx context.Context, tref string, opts *TextOptions) (*Text, error) {
-	u := s.client.BaseURL.JoinPath("/texts/", tref)
+	u := s.client.BaseURL.JoinPath("/v3/texts/", tref)
 	u.RawQuery = opts.Query()
 
 	req, err := s.client.NewRequest(ctx, http.MethodGet, u, nil)

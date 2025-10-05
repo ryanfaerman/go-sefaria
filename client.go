@@ -21,7 +21,13 @@ type Client struct {
 
 	common service
 
-	Text *TextService
+	Text     *TextService
+	Index    *IndexService
+	Calendar *CalendarService
+	Related  *RelatedService
+	Lexicon  *LexiconService
+	Topics   *TopicService
+	Terms    *TermService
 }
 
 func NewClient() *Client {
@@ -37,6 +43,12 @@ func NewClient() *Client {
 
 	c.common.client = c
 	c.Text = (*TextService)(&c.common)
+	c.Index = (*IndexService)(&c.common)
+	c.Calendar = (*CalendarService)(&c.common)
+	c.Related = (*RelatedService)(&c.common)
+	c.Lexicon = (*LexiconService)(&c.common)
+	c.Topics = (*TopicService)(&c.common)
+	c.Terms = (*TermService)(&c.common)
 
 	return c
 }
