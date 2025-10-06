@@ -25,6 +25,11 @@ func NewWriter(w io.Writer, flipRTL bool) *Writer {
 // RTL sequences. Text between RLM (U+200F) and LRM (U+200E) markers
 // is reversed, and if flipRTL is enabled, all RTL text is reversed.
 func (bw *Writer) Write(p []byte) (int, error) {
+	// Check if the underlying writer is nil
+	if bw.w == nil {
+		return len(p), io.ErrClosedPipe
+	}
+
 	// Convert to runes
 	runes := []rune(string(p))
 	var out bytes.Buffer
