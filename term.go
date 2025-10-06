@@ -6,30 +6,31 @@ import (
 	"net/http"
 
 	"github.com/google/go-querystring/query"
+	"github.com/ryanfaerman/go-sefaria/bidi"
 )
 
 type TermService service
 
 type TermTitle struct {
 	// The text of the title
-	Text string `json:"text"`
+	Text bidi.String `json:"text" table:"Title"`
 
 	// The language of the title, either "en" or "he"
-	Lang string `json:"lang"`
+	Lang string `json:"lang" table:"Language"`
 
 	// Whether or not the title is a primary title. For any given topics,
 	// one should expect two titles with this field present and set to true,
 	// an English and a Hebrew primary title. The English value with primary
 	// set to true will match the string value of the primaryTitle
 	// field on topic.
-	Primary bool `json:"primary,omitempty"`
+	Primary bool `json:"primary,omitempty" table:"Primary"`
 }
 
 type Term struct {
 	// Name of the Term. Since a Term is a shared title node that
 	// can be referenced and used by many different Index nodes, the
 	// name field is critical as it contains the shared title.
-	Name string `json:"name"`
+	Name string `json:"name" table:"Name"`
 
 	// Array of Alternative Titles for the Term in Hebrew and English.
 	Titles []TermTitle `json:"titles"`
@@ -93,11 +94,11 @@ type TermNameOptions struct {
 }
 
 type TermCompletion struct {
-	Title      string   `json:"title"`
-	Key        string   `json:"key"`
-	Type       string   `json:"type"`
+	Title      string   `json:"title" table:"Title"`
+	Key        string   `json:"key" table:"Key"`
+	Type       string   `json:"type" table:"Type"`
 	PictureURL string   `json:"pic,omitempty"`
-	Primary    bool     `json:"is_primary"`
+	Primary    bool     `json:"is_primary" table:"Primary"`
 	Order      int      `json:"order"`
 	TopicPools []string `json:"topic_pools,omitempty"`
 }

@@ -7,10 +7,12 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/hashicorp/go-retryablehttp"
@@ -25,6 +27,8 @@ type Client struct {
 
 	validate *validator.Validate
 
+	logger *slog.Logger
+
 	common service
 
 	Text     *TextService
@@ -36,9 +40,12 @@ type Client struct {
 	Terms    *TermService
 }
 
-func NewClient() *Client {
+type ClientOption func(*Client)
+
+func NewClient(opts ...ClientOption) *Client {
 	u, err := url.Parse("https://www.sefaria.org/api")
 	if err != nil {
+		// This should _never_ happen.
 		panic(err)
 	}
 	c := &Client{
@@ -47,6 +54,11 @@ func NewClient() *Client {
 		UserAgent:  "go-sefaria/v1",
 		validate:   validator.New(validator.WithRequiredStructEnabled()),
 	}
+
+	c.httpClient.RetryMax = 3
+	c.httpClient.RetryWaitMin = 150 * time.Millisecond
+	c.httpClient.RetryWaitMax = 1 * time.Second
+	c.httpClient.Logger = nil // disable default logging
 
 	c.common.client = c
 	c.Text = (*TextService)(&c.common)
@@ -57,7 +69,35 @@ func NewClient() *Client {
 	c.Topics = (*TopicService)(&c.common)
 	c.Terms = (*TermService)(&c.common)
 
+	for _, opt := range opts {
+		opt(c)
+	}
+
 	return c
+}
+
+func WithAPIEndpoint(endpoint string) ClientOption {
+	u, err := url.Parse(endpoint)
+	return func(c *Client) {
+		if err != nil {
+			c.log(slog.LevelError, "invalid API endpoint URL", slog.String("url", endpoint))
+			return
+		}
+		c.BaseURL = u
+	}
+}
+
+func WithLogger(logger *slog.Logger) ClientOption {
+	return func(c *Client) {
+		c.logger = logger
+		c.httpClient.Logger = logger
+	}
+}
+
+func WithHTTPClient(httpClient *http.Client) ClientOption {
+	return func(c *Client) {
+		c.httpClient.HTTPClient = httpClient
+	}
 }
 
 type RequestOption func(req *http.Request)
@@ -141,6 +181,12 @@ func (c *Client) validateStruct(s any) error {
 		return err
 	}
 	return nil
+}
+
+func (c *Client) log(level slog.Level, msg string, attrs ...slog.Attr) {
+	if c.logger != nil {
+		c.logger.LogAttrs(context.Background(), level, msg, attrs...)
+	}
 }
 
 type service struct {
