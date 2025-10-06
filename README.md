@@ -1,5 +1,10 @@
 # go-sefaria
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/ryanfaerman/go-sefaria)](https://goreportcard.com/report/github.com/ryanfaerman/go-sefaria)
+[![GoDoc](https://godoc.org/github.com/ryanfaerman/go-sefaria?status.svg)](https://godoc.org/github.com/ryanfaerman/go-sefaria)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Go Version](https://img.shields.io/badge/Go-1.25+-blue.svg)](https://golang.org/)
+
 A Go client library for the [Sefaria API](https://www.sefaria.org/api), providing programmatic access to Sefaria's vast library of Jewish texts and resources.
 
 ## About Sefaria
