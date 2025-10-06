@@ -1,3 +1,15 @@
+// Package bidi provides bidirectional text support for Hebrew and Arabic text.
+// It handles automatic text direction detection and proper rendering of mixed
+// left-to-right (LTR) and right-to-left (RTL) content.
+//
+// The package includes:
+//   - String: A custom string type that automatically wraps RTL text with
+//     Unicode directional markers for proper display
+//   - Writer: An io.Writer that processes bidirectional text and reverses
+//     RTL sequences for correct rendering
+//
+// This is particularly useful for applications dealing with Hebrew or Arabic
+// text that needs to be displayed correctly in mixed-language contexts.
 package bidi
 
 import (
@@ -6,19 +18,27 @@ import (
 	"unicode"
 )
 
+// String is a custom string type that provides automatic bidirectional text
+// support. It wraps RTL (right-to-left) text sequences with Unicode directional
+// markers to ensure proper display in mixed-language contexts.
 type String string
 
-// String implements fmt.Stringer, wrapping RTL text automatically.
+// String implements fmt.Stringer, automatically wrapping RTL text with
+// Unicode directional markers (RLM/LRM) for proper bidirectional display.
 func (s String) String() string {
 	return wrapRTL(string(s))
 }
 
-// MarshalJSON implements json.Marshaler, applying RTL wrapping when marshaling.
+// MarshalJSON implements json.Marshaler, applying RTL wrapping when marshaling
+// to JSON. This ensures that RTL text is properly marked for bidirectional
+// display when serialized.
 func (s String) MarshalJSON() ([]byte, error) {
 	return json.Marshal(s.String())
 }
 
-// UnmarshalJSON detects Hebrew (or RTL) content and stores it as-is.
+// UnmarshalJSON implements json.Unmarshaler, storing RTL content as-is without
+// applying directional markers. The markers will be added automatically when
+// the string is displayed via String() or MarshalJSON().
 func (s *String) UnmarshalJSON(data []byte) error {
 	// Trim quotes and unmarshal
 	var raw string
@@ -30,13 +50,43 @@ func (s *String) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// wrapRTL wraps any contiguous RTL text with RLM/LRM marks
+// wrapRTL wraps contiguous RTL text sequences with Unicode directional markers.
+// It adds RLM (Right-to-Left Mark, U+200F) at the start and LRM (Left-to-Right
+// Mark, U+200E) at the end of each RTL sequence, including spaces between
+// RTL words. This ensures proper bidirectional text rendering.
+// It also prevents double-wrapping by detecting existing markers.
 func wrapRTL(str string) string {
 	var buf bytes.Buffer
 	runes := []rune(str)
 	i := 0
 	for i < len(runes) {
-		if isRTL(runes[i]) {
+		// Check if we're already at a marker sequence
+		if runes[i] == '\u200F' { // RLM
+			// Skip the entire marked sequence
+			start := i
+			i++ // skip RLM
+			// Find the matching LRM
+			foundLRM := false
+			for i < len(runes) && runes[i] != '\u200E' {
+				i++
+			}
+			if i < len(runes) && runes[i] == '\u200E' {
+				i++ // skip LRM
+				foundLRM = true
+			}
+			// Copy the entire marked sequence as-is
+			for j := start; j < i; j++ {
+				buf.WriteRune(runes[j])
+			}
+			// If we didn't find a matching LRM, add one
+			if !foundLRM {
+				buf.WriteRune('\u200E')
+			}
+		} else if runes[i] == '\u200E' { // LRM without matching RLM
+			// This is a malformed sequence, treat the LRM as regular text
+			buf.WriteRune(runes[i])
+			i++
+		} else if isRTL(runes[i]) {
 			buf.WriteRune('\u200F') // RLM
 			// Find the end of the RTL sequence, including spaces between RTL words
 			start := i

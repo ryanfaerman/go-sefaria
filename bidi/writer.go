@@ -6,15 +6,24 @@ import (
 	"unicode"
 )
 
+// Writer is an io.Writer that processes bidirectional text by reversing
+// RTL sequences marked with Unicode directional markers. It can also
+// optionally reverse all RTL text when the flipRTL flag is enabled.
 type Writer struct {
 	w       io.Writer
 	flipRTL bool // optional flag to flip text even without markers
 }
 
+// NewWriter creates a new Writer that wraps the provided io.Writer.
+// If flipRTL is true, all RTL text will be reversed even without directional markers.
+// If false, only text between RLM/LRM markers will be reversed.
 func NewWriter(w io.Writer, flipRTL bool) *Writer {
 	return &Writer{w: w, flipRTL: flipRTL}
 }
 
+// Write implements io.Writer, processing bidirectional text by reversing
+// RTL sequences. Text between RLM (U+200F) and LRM (U+200E) markers
+// is reversed, and if flipRTL is enabled, all RTL text is reversed.
 func (bw *Writer) Write(p []byte) (int, error) {
 	// Convert to runes
 	runes := []rune(string(p))
@@ -58,7 +67,8 @@ func (bw *Writer) Write(p []byte) (int, error) {
 	return len(p), err
 }
 
-// Detect Hebrew / Arabic
+// isRTL detects if a rune belongs to a right-to-left script.
+// Currently supports Hebrew and Arabic scripts.
 func isRTL(r rune) bool {
 	return unicode.In(r, unicode.Hebrew, unicode.Arabic)
 }
