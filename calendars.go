@@ -18,6 +18,7 @@ type CalendarGetOptions struct {
 	TimeZone string `url:"timezone,omitempty"`
 }
 
+// TODO: replace this with a proper struct
 type Calendar map[string]any
 
 func (s *CalendarService) Get(ctx context.Context, opts *CalendarGetOptions) (*Calendar, error) {

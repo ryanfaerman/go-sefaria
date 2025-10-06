@@ -6,7 +6,6 @@ require (
 	github.com/caarlos0/ctrlc v1.2.0
 	github.com/caarlos0/log v0.5.2
 	github.com/charmbracelet/lipgloss v1.1.0
-	github.com/davecgh/go-spew v1.1.1
 	github.com/magefile/mage v1.15.0
 	github.com/mattn/go-runewidth v0.0.16
 	github.com/phsym/console-slog v0.3.1
