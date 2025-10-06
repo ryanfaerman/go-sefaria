@@ -4,11 +4,15 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 	"sync"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/hashicorp/go-retryablehttp"
 )
 
@@ -18,6 +22,8 @@ type Client struct {
 
 	httpClient *retryablehttp.Client
 	clientMu   sync.Mutex
+
+	validate *validator.Validate
 
 	common service
 
@@ -39,6 +45,7 @@ func NewClient() *Client {
 		BaseURL:    u,
 		httpClient: retryablehttp.NewClient(),
 		UserAgent:  "go-sefaria/v1",
+		validate:   validator.New(validator.WithRequiredStructEnabled()),
 	}
 
 	c.common.client = c
@@ -114,6 +121,26 @@ func (c *Client) Do(req *http.Request, v any) (*http.Response, error) {
 	}
 
 	return res, err
+}
+
+func (c *Client) validateStruct(s any) error {
+	if err := c.validate.Struct(s); err != nil {
+		var ve validator.ValidationErrors
+		if errors.As(err, &ve) {
+			msgs := make([]string, 0, len(ve))
+			for _, fe := range ve {
+				// Simple message: "Field <Field> failed <Tag> validation"
+				msg := fmt.Sprintf("Field '%s' failed validation: %s", fe.Field(), fe.Tag())
+				if fe.Param() != "" {
+					msg += fmt.Sprintf(" (expected %s)", fe.Param())
+				}
+				msgs = append(msgs, msg)
+			}
+			return errors.New(strings.Join(msgs, "; "))
+		}
+		return err
+	}
+	return nil
 }
 
 type service struct {
