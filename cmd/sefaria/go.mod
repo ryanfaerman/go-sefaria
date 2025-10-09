@@ -3,6 +3,7 @@ module github.com/ryanfaerman/go-sefaria/cmd/sefaria
 go 1.25.0
 
 require (
+	github.com/agnivade/levenshtein v1.2.1
 	github.com/caarlos0/ctrlc v1.2.0
 	github.com/caarlos0/log v0.5.2
 	github.com/charmbracelet/lipgloss v1.1.0
@@ -11,6 +12,7 @@ require (
 	github.com/phsym/console-slog v0.3.1
 	github.com/ryanfaerman/go-sefaria v0.0.0
 	github.com/spf13/cobra v1.10.1
+	github.com/tilotech/go-phonetics v1.1.0
 	github.com/urfave/sflags v0.4.1
 	gopkg.in/yaml.v3 v3.0.1
 )
