@@ -155,13 +155,13 @@ type TermCompletions struct {
 
 	// Given a reference, this returns the names of the sections and segments at
 	// each depth of that text.
-	SectionNames       []string `json:"sectionNames"`
-	HebrewSectionNames []string `json:"heSectionNames"`
+	SectionNames       []string      `json:"sectionNames"`
+	HebrewSectionNames []bidi.String `json:"heSectionNames"`
 
 	// Given a partial Ref, this will return an array of strings of possible ways
 	// that it might be completed.
-	AddressExamples       []string `json:"addressExamples"`
-	HebrewAddressExamples []string `json:"heAddressExamples"`
+	AddressExamples       []string      `json:"addressExamples"`
+	HebrewAddressExamples []bidi.String `json:"heAddressExamples"`
 }
 
 // Name serves primarily as an autocomplete endpoint, returning potential keyword matches
