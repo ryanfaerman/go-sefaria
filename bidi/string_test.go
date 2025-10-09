@@ -464,7 +464,7 @@ func TestWrapRTL(t *testing.T) {
 		{
 			name:     "Complex punctuation",
 			input:    "שלום! עולם?",
-			expected: "\u200Fשלום\u200E! \u200Fעולם\u200E?",
+			expected: "\u200Fשלום! עולם\u200E?",
 		},
 	}
 

@@ -78,12 +78,12 @@ func wrapRTL(str string) string {
 			buf.WriteRune('\u200F') // RLM
 			// Find the end of the RTL sequence, including spaces between RTL words
 			start := i
-			for i < len(runes) && (isRTL(runes[i]) || unicode.IsSpace(runes[i])) {
+			for i < len(runes) && (isRTL(runes[i]) || unicode.IsSpace(runes[i]) || unicode.Is(unicode.Punct, runes[i])) {
 				// If we hit a space, check if it's followed by more RTL text
-				if unicode.IsSpace(runes[i]) {
+				if unicode.IsSpace(runes[i]) || unicode.Is(unicode.Punct, runes[i]) {
 					// Look ahead to see if there's more RTL text after spaces
 					j := i + 1
-					for j < len(runes) && unicode.IsSpace(runes[j]) {
+					for j < len(runes) && (unicode.IsSpace(runes[j]) || unicode.Is(unicode.Punct, runes[j])) {
 						j++
 					}
 					if j < len(runes) && isRTL(runes[j]) {
