@@ -87,13 +87,30 @@ func wrapRTL(str string) string {
 						j++
 					}
 					if j < len(runes) && isRTL(runes[j]) {
-						i = j // include the spaces and continue with RTL text
+						i = j    // include the spaces and continue with RTL text
+						continue // Continue the loop to process the RTL character at position i
 					} else {
-						break // stop if spaces are followed by LTR text
+						// No more RTL text after spaces/punctuation
+						// For spaces, don't include them in RTL wrapping
+						// For punctuation, only include it if it's RTL punctuation
+						if unicode.IsSpace(runes[i]) {
+							break
+						} else if isRTL(runes[i]) {
+							// Include RTL punctuation in RTL sequence
+							i++
+							break
+						} else {
+							// Don't include LTR punctuation in RTL sequence
+							break
+						}
 					}
 				} else {
 					i++
 				}
+			}
+			// Ensure we always advance past the current character
+			if i == start {
+				i++
 			}
 			// Write the RTL text as-is (the Writer will handle reversal)
 			for j := start; j < i; j++ {
