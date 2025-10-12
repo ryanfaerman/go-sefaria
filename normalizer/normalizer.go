@@ -45,7 +45,16 @@ func applyValue(rv reflect.Value, normalizers []Normalizer) {
 		}
 	case reflect.Interface:
 		if !rv.IsNil() {
-			applyValue(rv.Elem(), normalizers)
+			elem := rv.Elem()
+			if elem.Kind() == reflect.String {
+				str := elem.String()
+				for _, n := range normalizers {
+					str = n(str)
+				}
+				rv.Set(reflect.ValueOf(str))
+			} else {
+				applyValue(elem, normalizers)
+			}
 		}
 	case reflect.Struct:
 		for i := 0; i < rv.NumField(); i++ {
@@ -69,6 +78,17 @@ func applyValue(rv reflect.Value, normalizers []Normalizer) {
 					str = n(str)
 				}
 				rv.SetMapIndex(key, reflect.ValueOf(str))
+			} else if val.Kind() == reflect.Interface {
+				// Handle interface{} values that might contain strings
+				if val.Elem().Kind() == reflect.String {
+					str := val.Elem().String()
+					for _, n := range normalizers {
+						str = n(str)
+					}
+					rv.SetMapIndex(key, reflect.ValueOf(str))
+				} else {
+					applyValue(val, normalizers)
+				}
 			} else {
 				applyValue(val, normalizers)
 			}
