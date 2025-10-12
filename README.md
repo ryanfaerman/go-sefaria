@@ -56,102 +56,16 @@ func main() {
 }
 ```
 
-## Services
+## Data normalization and alterations
 
-### Text Service
-Retrieve Jewish texts with support for multiple languages and versions:
+The data from sefaria comes from many sources and has some inconsistencies. This library attempts to normalize the data as much 
+as possible, but some alterations are made to the data to improve usability:
 
-```go
-// Get a specific text reference
-text, err := client.Text.Get(ctx, "Genesis 1:1", nil)
+- Replace typographic punctuation with ASCII equivalents (e.g., curly quotes to straight quotes)
+- Add bidirectional unicode markers to Hebrew and Arabic text for proper rendering (see `bidi` notes below)
 
-// Get text in Hebrew
-text, err := client.Text.Get(ctx, "Genesis 1:1", &sefaria.TextOptions{
-    Lang: "he",
-})
 
-// Get available languages for a text
-languages, err := client.Text.Languages(ctx, "Genesis")
-
-// Get available versions
-versions, err := client.Text.Versions(ctx, "Genesis")
-```
-
-### Index Service
-Explore Sefaria's comprehensive index of Jewish texts:
-
-```go
-// Get the complete index
-index, err := client.Index.Contents(ctx)
-
-// Get specific index entry
-entry, err := client.Index.Get(ctx, "Genesis")
-
-// Get text structure/shape
-shapes, err := client.Index.Shape(ctx, "Genesis", nil)
-```
-
-### Calendar Service
-Access Jewish calendar and reading schedule information:
-
-```go
-// Get current calendar information
-calendar, err := client.Calendar.Get(ctx)
-
-// Get next reading
-reading, err := client.Calendar.NextRead(ctx, "Bereshit")
-```
-
-### Lexicon Service
-Look up Hebrew/Aramaic terms and get definitions:
-
-```go
-// Get lexicon entry
-entry, err := client.Lexicon.Get(ctx, "תורה")
-
-// Get completions
-completions, err := client.Lexicon.Completions(ctx, "תור")
-```
-
-### Topics Service
-Discover and explore topics related to Jewish texts:
-
-```go
-// Get all topics
-topics, err := client.Topics.All(ctx, 10)
-
-// Get specific topic
-topic, err := client.Topics.Get(ctx, "Torah")
-
-// Get recommended topics for references
-recommended, err := client.Topics.Recommended(ctx, "Genesis 1:1", "Berakhot 2a")
-
-// Get random topics
-random, err := client.Topics.Random(ctx)
-```
-
-### Terms Service
-Get autocomplete suggestions and term information:
-
-```go
-// Get term completions
-completions, err := client.Terms.Completions(ctx, "torah")
-
-// Get full term information
-terms, err := client.Terms.Completions(ctx, "torah", &sefaria.TermOptions{
-    Full: true,
-})
-```
-
-### Related Service
-Find content related to specific references:
-
-```go
-// Get related content
-related, err := client.Related.Get(ctx, "Genesis 1:1")
-```
-
-## Bidirectional Text Support
+### Bidirectional Text Support
 
 The library includes comprehensive support for Hebrew and Arabic text through the `bidi` package:
 
