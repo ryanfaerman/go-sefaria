@@ -16,11 +16,14 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/hashicorp/go-retryablehttp"
+	"github.com/ryanfaerman/go-sefaria/normalizer"
 )
 
 type Client struct {
 	BaseURL   *url.URL
 	UserAgent string
+
+	Normalizers []normalizer.Normalizer
 
 	httpClient *retryablehttp.Client
 	clientMu   sync.Mutex
@@ -53,6 +56,11 @@ func NewClient(opts ...ClientOption) *Client {
 		httpClient: retryablehttp.NewClient(),
 		UserAgent:  "go-sefaria/v1",
 		validate:   validator.New(validator.WithRequiredStructEnabled()),
+		Normalizers: []normalizer.Normalizer{
+			normalizer.HTMLUnescape,
+			normalizer.UnicodeNFC,
+			normalizer.Punctuation,
+		},
 	}
 
 	c.httpClient.RetryMax = 3
@@ -157,6 +165,8 @@ func (c *Client) Do(req *http.Request, v any) (*http.Response, error) {
 		}
 		if decErr != nil {
 			err = decErr
+		} else {
+			normalizer.Apply(v, c.Normalizers...)
 		}
 	}
 
