@@ -8,23 +8,44 @@ import (
 
 	"github.com/google/go-querystring/query"
 	"github.com/ryanfaerman/go-sefaria/bidi"
+	"github.com/ryanfaerman/go-sefaria/types"
 )
 
 type CalendarService service
 
 type CalendarGetOptions struct {
-	Diaspora bool   `url:"diaspora,omitempty"`
-	Custom   string `url:"custom,omitempty"`
-	Year     int    `url:"year,omitempty"`
-	Month    int    `url:"month,omitempty"`
-	Day      int    `url:"day,omitempty"`
-	TimeZone string `url:"timezone,omitempty"`
+	Diaspora types.BoolInt `url:"diaspora,omitempty"`
+	Custom   string        `url:"custom,omitempty"`
+	Year     int           `url:"year,omitempty"`
+	Month    int           `url:"month,omitempty"`
+	Day      int           `url:"day,omitempty"`
+	TimeZone string        `url:"timezone,omitempty"`
 }
 
-// TODO: replace this with a proper struct
-type Calendar map[string]any
+type LearningSchedule struct {
+	Date      types.Date          `json:"date"`
+	Timezone  string              `json:"timezone"`
+	Learnings []ScheduledLearning `json:"calendar_items"`
+}
 
-func (s *CalendarService) Get(ctx context.Context, opts *CalendarGetOptions) (*Calendar, error) {
+type ScheduledLearning struct {
+	Title        BilingualString `json:"title"`
+	DisplayValue BilingualString `json:"displayValue"`
+	Description  BilingualString `json:"description"`
+
+	URL   string      `json:"url"`
+	Ref   string      `json:"ref"`
+	HeRef bidi.String `json:"heRef"`
+
+	Order    int    `json:"order"`
+	Category string `json:"category"`
+
+	ExtraDetails struct {
+		Aliyot []string `json:"aliyot,omitempty"`
+	} `json:"extraDetails"`
+}
+
+func (s *CalendarService) Get(ctx context.Context, opts *CalendarGetOptions) (*LearningSchedule, error) {
 	u := s.client.BaseURL.JoinPath("/calendars")
 	if opts != nil {
 		v, err := query.Values(opts)
@@ -38,9 +59,9 @@ func (s *CalendarService) Get(ctx context.Context, opts *CalendarGetOptions) (*C
 		return nil, err
 	}
 
-	calendar := new(Calendar)
-	_, err = s.client.Do(req, calendar)
-	return calendar, err
+	ls := new(LearningSchedule)
+	_, err = s.client.Do(req, ls)
+	return ls, err
 }
 
 var Parshiot = []string{
@@ -110,7 +131,7 @@ var Parshiot = []string{
 type ParshaReading struct {
 	Parsha     Parsha          `json:"parasha"`
 	Haftorah   []Haftorah      `json:"haftarah" table:"Haftorah"`
-	Date       Date            `json:"date"`
+	Date       types.Date      `json:"date"`
 	HebrewDate BilingualString `json:"he_date"`
 }
 

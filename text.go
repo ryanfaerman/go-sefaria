@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+
+	"github.com/ryanfaerman/go-sefaria/types"
 )
 
 type TextService service
@@ -68,24 +70,24 @@ type Text struct {
 }
 
 type Version struct {
-	Title                     string            `json:"title"`
-	VersionTitle              string            `json:"versionTitle"`
-	VersionSource             string            `json:"versionSource"`
-	Language                  string            `json:"language"`
-	Status                    string            `json:"status"`
-	License                   string            `json:"license"`
-	VersionNotes              string            `json:"versionNotes"`
-	DigitizedBySefaria        StringOr[bool]    `json:"digitizedBySefaria"`
-	Priority                  StringOr[float32] `json:"priority"`
-	VersionTitleInHebrew      string            `json:"versionTitleInHebrew"`
-	VersionNotesInHebrew      string            `json:"versionNotesInHebrew"`
-	ExtendedNotes             string            `json:"extendedNotes"`
-	ExtendedNotesHebrew       string            `json:"extendedNotesHebrew"`
-	PurchaseInformationImage  string            `json:"purchaseInformationImage"`
-	PurchaseInformationURL    string            `json:"purchaseInformationURL"`
-	ShortVersionTitle         string            `json:"shortVersionTitle"`
-	ShortVersionTitleInHebrew string            `json:"shortVersionTitleInHebrew"`
-	FirstSectionRef           string            `json:"firstSectionRef"`
+	Title                     string                  `json:"title"`
+	VersionTitle              string                  `json:"versionTitle"`
+	VersionSource             string                  `json:"versionSource"`
+	Language                  string                  `json:"language"`
+	Status                    string                  `json:"status"`
+	License                   string                  `json:"license"`
+	VersionNotes              string                  `json:"versionNotes"`
+	DigitizedBySefaria        types.StringOr[bool]    `json:"digitizedBySefaria"`
+	Priority                  types.StringOr[float32] `json:"priority"`
+	VersionTitleInHebrew      string                  `json:"versionTitleInHebrew"`
+	VersionNotesInHebrew      string                  `json:"versionNotesInHebrew"`
+	ExtendedNotes             string                  `json:"extendedNotes"`
+	ExtendedNotesHebrew       string                  `json:"extendedNotesHebrew"`
+	PurchaseInformationImage  string                  `json:"purchaseInformationImage"`
+	PurchaseInformationURL    string                  `json:"purchaseInformationURL"`
+	ShortVersionTitle         string                  `json:"shortVersionTitle"`
+	ShortVersionTitleInHebrew string                  `json:"shortVersionTitleInHebrew"`
+	FirstSectionRef           string                  `json:"firstSectionRef"`
 
 	FormatAsPoetry         string `json:"formatAsPoetry"`
 	Method                 string `json:"method"`

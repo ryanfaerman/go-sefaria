@@ -6,7 +6,7 @@ import (
 	"github.com/araddon/dateparse"
 	"github.com/ryanfaerman/go-sefaria"
 	"github.com/ryanfaerman/go-sefaria/cmd/sefaria/internal/phonetic"
-	"github.com/ryanfaerman/go-sefaria/param"
+	"github.com/ryanfaerman/go-sefaria/types"
 	"github.com/ryanfaerman/go-sefaria/tz"
 	"github.com/spf13/cobra"
 	"github.com/urfave/sflags/gen/gpflag"
@@ -95,7 +95,7 @@ Examples:
 `,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			opts := &sefaria.CalendarGetOptions{
-				Diaspora: param.BoolInt(optsCalendarGet.Diaspora),
+				Diaspora: types.BoolInt(optsCalendarGet.Diaspora),
 				TimeZone: optsCalendarGet.TimeZone,
 				Custom:   optsCalendarGet.Tradition,
 			}
