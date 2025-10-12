@@ -4,6 +4,7 @@ go 1.25.0
 
 require (
 	github.com/agnivade/levenshtein v1.2.1
+	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/caarlos0/ctrlc v1.2.0
 	github.com/caarlos0/log v0.5.2
 	github.com/charmbracelet/lipgloss v1.1.0
