@@ -103,6 +103,8 @@ type TermCompletion struct {
 	TopicPools []string    `json:"topic_pools,omitempty"`
 }
 
+// Keys returns the value of Key (which may have been returned as either a string or a
+// slice of strings) as a slice of strings.
 func (tc TermCompletion) Keys() []string {
 	switch tc.Key.(type) {
 	case []string:
