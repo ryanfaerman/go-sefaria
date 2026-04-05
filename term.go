@@ -94,13 +94,24 @@ type TermNameOptions struct {
 }
 
 type TermCompletion struct {
-	Title      string   `json:"title" table:"Title"`
-	Key        string   `json:"key" table:"Key"`
-	Type       string   `json:"type" table:"Type"`
-	PictureURL string   `json:"pic,omitempty"`
-	Primary    bool     `json:"is_primary" table:"Primary"`
-	Order      int      `json:"order"`
-	TopicPools []string `json:"topic_pools,omitempty"`
+	Title      string      `json:"title" table:"Title"`
+	Key        interface{} `json:"key" table:"Key"`
+	Type       string      `json:"type" table:"Type"`
+	PictureURL string      `json:"pic,omitempty"`
+	Primary    bool        `json:"is_primary" table:"Primary"`
+	Order      int         `json:"order"`
+	TopicPools []string    `json:"topic_pools,omitempty"`
+}
+
+// Keys returns the value of Key (which may have been returned as either a string or a
+// slice of strings) as a slice of strings.
+func (tc TermCompletion) Keys() []string {
+	switch tc.Key.(type) {
+	case []string:
+		return tc.Key.([]string)
+	default:
+		return []string{tc.Key.(string)}
+	}
 }
 
 type TermCompletions struct {
